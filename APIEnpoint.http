@@ -1,0 +1,84 @@
+@hostname = localhost
+@port = 8080
+@host = {{hostname}}:{{port}}
+@contentType = application/json
+
+// Reject: Weight exceeds 50kg
+POST http://{{host}}/api/v1/shipping HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "weight": 51,
+    "height": 50,
+    "width": 5,
+    "length": 4
+}
+
+###
+
+// Heavy Parcel: Weight exceeds 10kg, Rate: PHP 20
+POST http://{{host}}/api/v1/shipping HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "weight": 50,
+    "height": 50,
+    "width": 5,
+    "length": 4
+}
+
+###
+
+// Small Parcel: Volume is less than 1500 cm3, Rate: PHP 0.03
+// Volume: 1499
+POST http://{{host}}/api/v1/shipping HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "weight": 5,
+    "height": 50,
+    "width": 5.996,
+    "length": 5
+}
+
+###
+
+// Medium Parcel: Volume is less than 2500 cm3, Rate: PHP 0.04
+// Volume: 2475
+POST http://{{host}}/api/v1/shipping HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "weight": 5,
+    "height": 50,
+    "width": 5,
+    "length": 9.9
+}
+
+###
+
+// Large Parcel: Volume is greater than 2500 cm3, Rate: PHP 0.05
+// Volume: 2500
+POST http://{{host}}/api/v1/shipping HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "weight": 5,
+    "height": 50,
+    "width": 5,
+    "length": 10
+}
+
+###
+
+// Heavy Parcel with voucher or discount
+POST http://{{host}}/api/v1/shipping HTTP/1.1
+content-type: {{contentType}}
+
+{
+    "weight": 50,
+    "height": 50,
+    "width": 5,
+    "length": 4,
+    "voucher": "MYNT"
+}

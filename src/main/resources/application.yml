@@ -1,0 +1,65 @@
+spring:
+  jpa:      
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?createDatabaseIfNotExist=true
+    password: ${DB_PASSWORD}
+    username: ${DB_USERNAME}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  application:
+    name: shipping-calculator
+  liquibase:
+    change-log: classpath:db/changelog/app-changelog.xml
+    default-schema: ${DB_DATABASE}
+  
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type: trace
+
+resilience4j:
+  retry:
+    retry-aspect-order: 2
+    instances:
+      shippingDiscountServiceRetry:
+        max-attempts: 3
+        wait-duration: 5s
+        enable-exponential-backoff: true
+        exponential-backoff-multiplier: 2
+        retry-exceptions:
+          - org.springframework.web.client.RestClientException
+          - org.springframework.web.client.HttpClientErrorException
+        ignoreExceptions:
+          - com.jomardev25.exception.ShippingDiscountException
+  circuitbreaker:
+    circuit-breaker-aspect-order: 1
+    instances:
+      shippingDiscountServiceBreaker:
+        wait-duration-in-open-state: 1m
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-type: count-based
+        sliding-window-size: 5
+        minimum-number-of-calls: 5
+        slow-call-duration-threshold: 10s
+        slow-call-rate-threshold: 60
+        failure-rate-threshold: 60
+        ignoreExceptions:
+          - com.jomardev25.exception.ShippingDiscountException
+  
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    circuitbreakers:
+      enabled: 'true'
+
+voucher-service:
+  url: ${VOUCHER_SERVICE_URL} 
+  api-key: ${VOUCHER_SERVICE_API_KEY} 

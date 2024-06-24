@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      - DB_HOST=mysq_db
+      - DB_PORT=3306
+      - DB_DATABASE=shipping_calculator_db
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - VOUCHER_SERVICE_URL=https://mynt-exam.mocklab.io/voucher
+      - VOUCHER_SERVICE_API_KEY=apikey
+    depends_on:
+      - mysq_db
+  mysq_db:
+    image: mysql:8.0.37
+    #restart: always
+    environment:
+      - MYSQL_DATABASE=shipping_calculator_db
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  shipping-cost-calculator-networks:
