@@ -3,6 +3,7 @@ package com.jomardev25.service.impl;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+import com.jomardev25.service.ShippingDiscountService;
 import org.springframework.stereotype.Service;
 import com.jomardev25.calculator.HeavyParcelDecorator;
 import com.jomardev25.calculator.LargeParcelDecorator;
@@ -22,18 +23,16 @@ import lombok.RequiredArgsConstructor;
 public class ShippingCalculatorServiceImpl implements ShippingCalculatorService {
 
     private final ShippingRateRepository shippingRateRepository;
-    private final ShippingDiscountServiceImpl shippingDiscountService;
+    private final ShippingDiscountService shippingDiscountService;
 
-    public BigDecimal calculateShippingCost(double weight, double height, double width, double length, String voucherCode)
-            throws RuntimeException {
+    public BigDecimal calculateShippingCost(double weight, double height, double width, double length, String voucherCode) throws RuntimeException {
 
         var shippingCost = 0.0;
         var volume = height * width * length; // volume
         var rate = 0.0;
-        ShippingCostCalculator shippingCalculator; // Large Parcel: Volume is greater than 2500 cm3
+        ShippingCostCalculator shippingCalculator;
 
-        if (weight > 50)
-            throw new ShippingRuleException(); // Reject: Weight exceeds 50kg
+        if (weight > 50) throw new ShippingRuleException(); // Reject: Weight exceeds 50kg
 
         if (weight > 10) {
             rate = getShippingRate(ShippingRule.HEAVY_PARCEL);
@@ -50,7 +49,7 @@ public class ShippingCalculatorServiceImpl implements ShippingCalculatorService 
         }
 
         shippingCost = shippingCalculator.calculateCost();
-       
+
         if (voucherCode != null && !voucherCode.isBlank()) {
             shippingCost = calculateShippingCostWithDiscount(shippingCost, voucherCode);
         }
@@ -61,13 +60,11 @@ public class ShippingCalculatorServiceImpl implements ShippingCalculatorService 
     private double calculateShippingCostWithDiscount(double currentShippingCost, String voucherCode) {
         var discountPercentage = shippingDiscountService.getShippingDiscount(voucherCode);
         var discount = currentShippingCost * discountPercentage;
-        var shippingCost = currentShippingCost - discount;
-        return shippingCost;
+        return currentShippingCost - discount;
     }
 
     private double getShippingRate(ShippingRule shippingRule) throws ResourceNotFoundException {
-        var shippingRate = shippingRateRepository.findByRuleName(shippingRule)
-                .orElseThrow(() -> new ResourceNotFoundException("Shipping rate", "rule name", shippingRule.name()));
+        var shippingRate = shippingRateRepository.findByRuleName(shippingRule).orElseThrow(() -> new ResourceNotFoundException("Shipping rate", "rule name", shippingRule.name()));
         return shippingRate.getRate();
     }
 

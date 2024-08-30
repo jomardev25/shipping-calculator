@@ -20,21 +20,20 @@ import lombok.RequiredArgsConstructor;
 @Component
 public class ShippingDiscountApi {
 
-    @Value("${voucher-service.url}")
-    private String VOUCHER_SERVICE_URL;
+    //@Value("${voucher-service.url}")
+    private final String VOUCHER_SERVICE_URL = "http://localhost:3000";
 
-    @Value("${voucher-service.api-key}")
-    private String VOUCHER_SERVICE_API_KEY;
+    // @Value("${voucher-service.api-key}")
+    private final String VOUCHER_SERVICE_API_KEY = "API_KEY";
 
     private final RestTemplate restTemplate;
-   
+
     @Retry(name = "shippingDiscountServiceRetry", fallbackMethod = "getShippingDiscountFallback")
     @CircuitBreaker(name = "shippingDiscountServiceBreaker", fallbackMethod = "getShippingDiscountFallback")
     public ResponseEntity<ShippingDiscountDTO> get(String voucherCode) {
-        var voucherServiceUrl = String.format("%s/%s?key=%s", VOUCHER_SERVICE_URL, voucherCode, VOUCHER_SERVICE_API_KEY);
+        var voucherServiceUrl = "http://localhost:3000/voucher/AA1235"; //String.format("%s/%s?key=%s", VOUCHER_SERVICE_URL, voucherCode, VOUCHER_SERVICE_API_KEY);
         System.out.println(voucherServiceUrl);
-        var response = restTemplate.getForEntity(voucherServiceUrl, ShippingDiscountDTO.class);
-        return response;
+        return restTemplate.getForEntity("http://localhost:3000/voucher/AA1235", ShippingDiscountDTO.class);
     }
 
     public ResponseEntity<ShippingDiscountDTO> getShippingDiscountFallback(Exception ex) {

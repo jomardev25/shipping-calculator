@@ -20,10 +20,11 @@ public class ShippingDiscountServiceImpl implements ShippingDiscountService {
 
     @Override
     public double getShippingDiscount(String voucherCode) {
-      
+
         var shippingDiscountDTO = shippingDiscountApi.get(voucherCode).getBody();
 
-        if(shippingDiscountDTO.getDiscount() == 0 && shippingDiscountDTO.getCode() == null && shippingDiscountDTO.getExpiry() == null)
+        assert shippingDiscountDTO != null;
+        if (shippingDiscountDTO.getDiscount() == 0 && shippingDiscountDTO.getCode() == null && shippingDiscountDTO.getExpiry() == null)
             throw new ShippingDiscountException("Voucher service is not available at this time. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR);
 
         var sdf = new SimpleDateFormat("yyyy-MM-dd");

@@ -11,4 +11,6 @@ public interface ShippingRateRepository extends JpaRepository<ShippingRate, Inte
 
     Optional<ShippingRate> findByRuleName(ShippingRule shippingRule);
 
+
+
 }

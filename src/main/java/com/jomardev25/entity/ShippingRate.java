@@ -24,8 +24,8 @@ import lombok.Setter;
 public class ShippingRate {
 
     @Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "rule_name", length = 30, nullable = false, unique = true)

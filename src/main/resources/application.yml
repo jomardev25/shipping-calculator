@@ -1,9 +1,9 @@
 spring:
-  jpa:      
+  jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_DATABASE}?createDatabaseIfNotExist=true
     password: ${DB_PASSWORD}
@@ -12,9 +12,10 @@ spring:
   application:
     name: shipping-calculator
   liquibase:
+    enabled: false
     change-log: classpath:db/changelog/app-changelog.xml
     default-schema: ${DB_DATABASE}
-  
+
 logging:
   level:
     org:
@@ -50,7 +51,7 @@ resilience4j:
         failure-rate-threshold: 60
         ignoreExceptions:
           - com.jomardev25.exception.ShippingDiscountException
-  
+
 management:
   endpoints:
     web:
@@ -61,5 +62,5 @@ management:
       enabled: 'true'
 
 voucher-service:
-  url: ${VOUCHER_SERVICE_URL} 
+  url: ${VOUCHER_SERVICE_URL}
   api-key: ${VOUCHER_SERVICE_API_KEY} 
